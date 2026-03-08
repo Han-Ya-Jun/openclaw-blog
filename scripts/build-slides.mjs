@@ -22,11 +22,11 @@ if (decks.length === 0) {
 for (const deck of decks) {
   const slidePath = join(slidesDir, deck.name, 'slides.md');
   const outDir = join(outBase, deck.name);
-  console.log(`Building slides: ${deck.name} → ${outDir}`);
+  console.log(`Building slides: ${deck.name}`);
   execSync(
     `npx slidev build "${slidePath}" --base /openclaw-blog/slides/${deck.name}/ --out "${outDir}"`,
     { stdio: 'inherit' }
   );
 }
 
-console.log(`Built ${decks.length} slide deck(s).`);
+console.log(`\nBuilt ${decks.length} slide deck(s).`);

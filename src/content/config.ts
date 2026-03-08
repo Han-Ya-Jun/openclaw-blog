@@ -8,18 +8,8 @@ const blog = defineCollection({
     date: z.coerce.date(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
-    cover: z.string().optional(),
+    slide: z.boolean().default(false),
   }),
 });
 
-const slides = defineCollection({
-  type: 'data',
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    date: z.coerce.date(),
-    path: z.string(),
-  }),
-});
-
-export const collections = { blog, slides };
+export const collections = { blog };

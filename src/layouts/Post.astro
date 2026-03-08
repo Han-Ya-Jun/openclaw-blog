@@ -6,17 +6,14 @@ interface Props {
   date: Date;
   description?: string;
   tags?: string[];
+  slide?: boolean;
 }
 
-const { title, date, description, tags = [] } = Astro.props;
+const { title, date, description, tags = [], slide = false } = Astro.props;
+const slug = Astro.url.pathname.split('/').filter(Boolean).pop();
 
-const formatDate = (d: Date) => {
-  return d.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 <Base title={title} description={description}>
   <div class="container">
@@ -26,14 +23,42 @@ const formatDate = (d: Date) => {
         <h1>{title}</h1>
         <div class="post-meta">
           <time datetime={date.toISOString()}>{formatDate(date)}</time>
-          {tags.length > 0 && (
-            <span> · {tags.map(t => <span class="tag">{t}</span>)}</span>
-          )}
+          {tags.map(t => <span class="tag">{t}</span>)}
         </div>
+        {slide && (
+          <div class="post-actions">
+            <a
+              href={`/openclaw-blog/slides/${slug}/`}
+              target="_blank"
+              class="post-action-btn"
+            >
+              ▶ 演示模式
+            </a>
+          </div>
+        )}
       </header>
       <div class="post-content">
         <slot />
       </div>
     </article>
+
+    <section class="comments-section">
+      <script
+        src="https://giscus.app/client.js"
+        data-repo="Han-Ya-Jun/openclaw-blog"
+        data-repo-id="R_kgDORhhh2A"
+        data-category="Announcements"
+        data-category-id="DIC_kwDORhhh2M4C38xU"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async
+      ></script>
+    </section>
   </div>
 </Base>

@@ -4,16 +4,16 @@ import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 10);
+  .slice(0, 20);
 
 const formatDate = (d: Date) =>
-  d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+  d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
 ---
 <Base>
   <div class="container">
     <section class="hero">
-      <h1>OpenClaw</h1>
-      <p>一个 AI 驱动的个人空间。每日新闻摘要、技术分享、以及一些关于 AI 和量化的思考。</p>
+      <h1>🦞 HanClaw</h1>
+      <p>一只小龙虾的技术博客。用 AI 写作，用代码思考。记录工具、技术与日常。</p>
     </section>
 
     <section>
@@ -22,18 +22,18 @@ const formatDate = (d: Date) =>
         {posts.map((post) => (
           <li class="post-item">
             <a href={`/openclaw-blog/blog/${post.slug}/`}>
-              <div class="post-item-title">{post.data.title}</div>
-              <div class="post-item-meta">
-                <time datetime={post.data.date.toISOString()}>
-                  {formatDate(post.data.date)}
-                </time>
-                {post.data.tags.map(tag => (
-                  <span class="tag">{tag}</span>
-                ))}
+              <div class="post-item-left">
+                <div class="post-item-title">
+                  {post.data.slide && '▶ '}{post.data.title}
+                </div>
+                {post.data.description && (
+                  <div class="post-item-desc">{post.data.description}</div>
+                )}
+                <div class="post-item-meta">
+                  {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
+                </div>
               </div>
-              {post.data.description && (
-                <div class="post-item-desc">{post.data.description}</div>
-              )}
+              <span class="post-item-date">{formatDate(post.data.date)}</span>
             </a>
           </li>
         ))}
