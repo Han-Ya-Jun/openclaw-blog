@@ -23,19 +23,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install blog dependencies
+        run: npm install
 
       - name: Build Astro site
         run: npm run build
 
-      - name: Install Slidev
-        run: npm install -D @slidev/cli @slidev/theme-default
-
-      - name: Build Slidev decks
-        run: node scripts/build-slides.mjs
+      - name: Install Slidev & build decks
+        run: |
+          npm install -D @slidev/cli @slidev/theme-default
+          node scripts/build-slides.mjs
 
       - uses: actions/upload-pages-artifact@v3
         with:
