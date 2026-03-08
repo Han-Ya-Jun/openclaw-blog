@@ -260,10 +260,10 @@ html.dark .astro-code span {
   width: 220px;
   flex-shrink: 0;
   position: sticky;
-  top: 100px;
-  max-height: calc(100vh - 140px);
+  top: 24px;
+  max-height: calc(100vh - 48px);
   overflow-y: auto;
-  padding-top: 160px;
+  padding-top: 72px;
 }
 
 .toc-sidebar::-webkit-scrollbar { width: 0; }
