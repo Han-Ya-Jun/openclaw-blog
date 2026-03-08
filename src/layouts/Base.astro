@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'OpenClaw Blog', description = 'AI 驱动的个人博客' } = Astro.props;
+const siteTitle = title === 'OpenClaw Blog' ? title : `${title} - OpenClaw Blog`;
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <link rel="icon" type="image/svg+xml" href="/openclaw-blog/favicon.svg" />
+  <title>{siteTitle}</title>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="/openclaw-blog/" class="site-logo">open<span>claw</span></a>
+      <nav>
+        <ul class="site-nav">
+          <li><a href="/openclaw-blog/">首页</a></li>
+          <li><a href="/openclaw-blog/blog/">博客</a></li>
+          <li><a href="/openclaw-blog/slides/">演示</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Powered by <a href="https://github.com/anthropics/opencode" target="_blank">OpenClaw</a> · Built with <a href="https://astro.build" target="_blank">Astro</a></p>
+    </div>
+  </footer>
+</body>
+</html>
