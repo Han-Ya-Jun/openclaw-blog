@@ -16,54 +16,119 @@ const formatDate = (d: Date) =>
   d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 <Base title={title} description={description}>
-  <div class="container">
-    <a href="/openclaw-blog/blog/" class="back-link">← 返回博客</a>
-    <article>
-      <header class="post-header">
-        <h1>{title}</h1>
-        <div class="post-meta">
-          <time datetime={date.toISOString()}>{formatDate(date)}</time>
-          {tags.map(t => <span class="tag">{t}</span>)}
-        </div>
-        {slide && (
-          <div class="post-actions">
-            <a
-              href={`/openclaw-blog/slides/${slug}/`}
-              target="_blank"
-              class="post-action-btn"
-            >
-              ▶ 演示模式
-            </a>
+  <div class="post-layout">
+    <div class="post-main">
+      <a href="/openclaw-blog/blog/" class="back-link">← 返回博客</a>
+      <article>
+        <header class="post-header">
+          <h1>{title}</h1>
+          <div class="post-meta">
+            <time datetime={date.toISOString()}>{formatDate(date)}</time>
+            {tags.map(t => <span class="tag">{t}</span>)}
           </div>
-        )}
-      </header>
-      <div class="post-content">
-        <slot />
-      </div>
-    </article>
+          {slide && (
+            <div class="post-actions">
+              <a
+                href={`/openclaw-blog/slides/${slug}/`}
+                target="_blank"
+                class="post-action-btn"
+              >
+                ▶ 演示模式
+              </a>
+            </div>
+          )}
+        </header>
+        <div class="post-content" id="post-content">
+          <slot />
+        </div>
+      </article>
 
-    <section class="comments-section" id="comments">
-      <script is:inline>
-        (function() {
-          var theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-          var s = document.createElement('script');
-          s.src = 'https://giscus.app/client.js';
-          s.setAttribute('data-repo', 'Han-Ya-Jun/openclaw-blog');
-          s.setAttribute('data-repo-id', 'R_kgDORhhh2A');
-          s.setAttribute('data-category', 'Announcements');
-          s.setAttribute('data-category-id', 'DIC_kwDORhhh2M4C38xU');
-          s.setAttribute('data-mapping', 'pathname');
-          s.setAttribute('data-strict', '0');
-          s.setAttribute('data-reactions-enabled', '1');
-          s.setAttribute('data-emit-metadata', '0');
-          s.setAttribute('data-input-position', 'top');
-          s.setAttribute('data-theme', theme);
-          s.setAttribute('data-lang', 'zh-CN');
-          s.setAttribute('crossorigin', 'anonymous');
-          s.async = true;
-          document.getElementById('comments').appendChild(s);
-        })();
-      </script>
-    </section>
+      <section class="comments-section" id="comments">
+        <script is:inline>
+          (function() {
+            var theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            var s = document.createElement('script');
+            s.src = 'https://giscus.app/client.js';
+            s.setAttribute('data-repo', 'Han-Ya-Jun/openclaw-blog');
+            s.setAttribute('data-repo-id', 'R_kgDORhhh2A');
+            s.setAttribute('data-category', 'Announcements');
+            s.setAttribute('data-category-id', 'DIC_kwDORhhh2M4C38xU');
+            s.setAttribute('data-mapping', 'pathname');
+            s.setAttribute('data-strict', '0');
+            s.setAttribute('data-reactions-enabled', '1');
+            s.setAttribute('data-emit-metadata', '0');
+            s.setAttribute('data-input-position', 'top');
+            s.setAttribute('data-theme', theme);
+            s.setAttribute('data-lang', 'zh-CN');
+            s.setAttribute('crossorigin', 'anonymous');
+            s.async = true;
+            document.getElementById('comments').appendChild(s);
+          })();
+        </script>
+      </section>
+    </div>
+
+    <aside class="toc-sidebar" id="tocSidebar">
+      <nav class="toc" id="toc">
+        <div class="toc-title">目录</div>
+        <ul id="tocList"></ul>
+      </nav>
+    </aside>
   </div>
+
+  <script is:inline>
+    (function() {
+      var content = document.getElementById('post-content');
+      var tocList = document.getElementById('tocList');
+      if (!content || !tocList) return;
+
+      var headings = content.querySelectorAll('h2, h3');
+      if (headings.length === 0) {
+        document.getElementById('tocSidebar').style.display = 'none';
+        return;
+      }
+
+      headings.forEach(function(h, i) {
+        if (!h.id) h.id = 'heading-' + i;
+        var li = document.createElement('li');
+        li.className = 'toc-item toc-' + h.tagName.toLowerCase();
+        var a = document.createElement('a');
+        a.href = '#' + h.id;
+        a.textContent = h.textContent;
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          history.replaceState(null, '', '#' + h.id);
+        });
+        li.appendChild(a);
+        tocList.appendChild(li);
+      });
+
+      var tocItems = tocList.querySelectorAll('.toc-item a');
+      var activeIndex = -1;
+
+      function updateActive() {
+        var scrollY = window.scrollY + 100;
+        var newIndex = -1;
+        headings.forEach(function(h, i) {
+          if (h.offsetTop <= scrollY) newIndex = i;
+        });
+        if (newIndex !== activeIndex) {
+          activeIndex = newIndex;
+          tocItems.forEach(function(a, i) {
+            a.classList.toggle('active', i === activeIndex);
+          });
+        }
+      }
+
+      var ticking = false;
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(function() { updateActive(); ticking = false; });
+          ticking = true;
+        }
+      });
+      updateActive();
+    })();
+  </script>
 </Base>
