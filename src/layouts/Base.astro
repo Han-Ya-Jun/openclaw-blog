@@ -69,6 +69,13 @@ const siteTitle = title === 'HanClaw Blog' ? title : `${title} - HanClaw Blog`;
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       updateIcon();
+      var giscusFrame = document.querySelector('iframe.giscus-frame');
+      if (giscusFrame) {
+        giscusFrame.contentWindow.postMessage(
+          { giscus: { setConfig: { theme: isDark ? 'dark' : 'light' } } },
+          'https://giscus.app'
+        );
+      }
     });
   </script>
 </body>
