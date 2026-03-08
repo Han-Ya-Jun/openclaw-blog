@@ -3,7 +3,7 @@ import { execSync } from 'child_process';
 import { join } from 'path';
 
 const slidesDir = join(process.cwd(), 'slides');
-const outBase = join(process.cwd(), 'dist', 'openclaw-blog', 'slides');
+const outBase = join(process.cwd(), 'dist', 'slides');
 
 if (!existsSync(slidesDir)) {
   console.log('No slides directory found, skipping.');
