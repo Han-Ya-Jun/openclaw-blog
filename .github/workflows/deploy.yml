@@ -20,19 +20,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
+          cache: pnpm
 
-      - name: Install blog dependencies
-        run: npm install
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Build Astro site
-        run: npm run build
+        run: pnpm run build
 
       - name: Install Slidev & build decks
         run: |
-          npm install -D @slidev/cli @slidev/theme-default
+          pnpm add -D @slidev/cli @slidev/theme-default
           node scripts/build-slides.mjs
 
       - uses: actions/upload-pages-artifact@v3
