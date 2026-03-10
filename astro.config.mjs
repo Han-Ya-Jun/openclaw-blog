@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import { rehypeShiki } from '@astrojs/markdown-remark';
 import rehypeMermaid from 'rehype-mermaid';
 
 export default defineConfig({
@@ -9,7 +8,7 @@ export default defineConfig({
   base: '/openclaw-blog',
   integrations: [mdx(), sitemap()],
   markdown: {
-    syntaxHighlight: false,
+    syntaxHighlight: 'shiki',
     rehypePlugins: [
       [
         rehypeMermaid,
@@ -18,7 +17,6 @@ export default defineConfig({
           dark: true,
         }
       ],
-      rehypeShiki,
     ],
     shikiConfig: {
       themes: {
