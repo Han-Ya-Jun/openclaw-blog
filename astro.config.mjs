@@ -1,14 +1,14 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import remarkMermaid from 'remark-mermaid';
+import rehypeMermaid from 'rehype-mermaid';
 
 export default defineConfig({
   site: 'https://hanyajun.com',
   base: '/openclaw-blog',
   integrations: [mdx(), sitemap()],
   markdown: {
-    remarkPlugins: [remarkMermaid],
+    rehypePlugins: [rehypeMermaid],
     shikiConfig: {
       themes: {
         light: 'github-light',
