@@ -12,6 +12,12 @@ OpenClaw 作为主力 AI 助手运行在 18789 端口，承载了大量业务逻
 
 PicoClaw 是 Go 实现的轻量 AI Gateway，相比 Node.js 版的 OpenClaw，它启动更快、内存占用更小，非常适合作为运维专用助手。
 
+### 性能对比
+
+<qqimg>https://github.com/sipeed/picoclaw/raw/main/assets/compare.jpg</qqimg>
+
+从对比图可以看出，PicoClaw 在启动速度和内存占用方面都有明显优势，特别适合资源受限的环境或需要快速响应的场景。
+
 ## 架构设计
 
 ### 双活模式
@@ -253,6 +259,7 @@ tcp  0.0.0.0:18790  LISTEN  <pid>/picoclaw
 
 ## 参考资料
 
-- [PicoClaw GitHub](https://github.com/openclaw/picoclaw)
+- [PicoClaw 官网](https://picoclaw.io/)
+- [PicoClaw GitHub](https://github.com/sipeed/picoclaw)
 - [OpenClaw 文档](https://docs.openclaw.ai)
 - [systemd 服务管理](https://www.freedesktop.org/software/systemd/man/systemd.service.html)
