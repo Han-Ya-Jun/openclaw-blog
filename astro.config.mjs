@@ -17,15 +17,6 @@ export default defineConfig({
           dark: true,
         }
       ],
-      [
-        (await import('@astrojs/markdown-remark')).rehypeShiki,
-        {
-          themes: {
-            light: 'github-light',
-            dark: 'github-dark',
-          },
-        }
-      ],
     ],
   },
 });
