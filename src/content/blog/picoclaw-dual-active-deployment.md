@@ -94,9 +94,9 @@ sudo systemctl start picoclaw
 
 重启服务后，PicoClaw 会自动连接 QQ Bot WebSocket。
 
-### 4. 模型配置（对齐 OpenClaw）
+### 4. 模型配置
 
-从 OpenClaw 的 `openclaw.json` 读取 provider 配置，在 PicoClaw 中配置相同的模型列表：
+在 PicoClaw 的 `config.json` 中配置模型列表，可以参考 OpenClaw 的配置：
 
 ```json
 {
@@ -105,94 +105,14 @@ sudo systemctl start picoclaw
       "model_name": "claude-opus-4-6",
       "litellm_params": {
         "model": "anthropic/claude-opus-4-6",
-        "api_base": "https://xchai.xyz/v1",
+        "api_base": "https://your-provider.com/v1",
         "api_key": "sk-xxx"
-      }
-    },
-    {
-      "model_name": "deepseek-v3.2",
-      "litellm_params": {
-        "model": "openai/deepseek-v3.2",
-        "api_base": "https://api.lkeap.cloud.tencent.com/v1",
-        "api_key": "sk-xxx"
-      }
-    },
-    {
-      "model_name": "ark-code-latest",
-      "litellm_params": {
-        "model": "anthropic/ark-code-latest",
-        "api_base": "https://ark.cn-beijing.volces.com/api/coding/v1",
-        "api_key": "xxx"
       }
     }
   ],
   "default_model": "claude-opus-4-6"
 }
 ```
-
-## 踩坑记录
-
-### 坑 1：xchai 返回 HTML
-
-**现象**：调用 xchai 代理的 Anthropic API 时返回 HTML 页面，而不是 JSON。
-
-**原因**：`api_base` 配置为 `https://xchai.xyz`，缺少 `/v1` 后缀。
-
-**解决**：改为 `https://xchai.xyz/v1`。
-
-### 坑 2：端口 18790 被占用
-
-**现象**：systemd 启动 PicoClaw 失败，提示端口已被占用。
-
-**原因**：之前手动启动过 `picoclaw gateway`，进程残留。
-
-**解决**：
-```bash
-# 找到占用端口的进程
-lsof -i :18790
-# 杀掉进程
-kill <PID>
-# 重启 systemd 服务
-sudo systemctl restart picoclaw
-```
-
-### 坑 3：Anthropic 代理间歇性空回复
-
-**现象**：xchai 代理偶尔返回 `content_chars=0` 空回复。
-
-**原因**：可能是协议兼容性问题或代理服务不稳定。
-
-**解决**：
-1. 先换成 OpenAI 协议的模型（如 `deepseek-v3.2`），验证功能正常
-2. 如果需要 Anthropic 协议，可以换其他 provider（如 ARK Code）
-
-### 坑 4：ARK Code 前缀错误
-
-**现象**：使用 `volcengine/ark-code-latest` 调用火山引擎 ARK Code 时报 404。
-
-**原因**：ARK Code 的 coding 端点使用 Anthropic 协议，不是 OpenAI 协议。
-
-**解决**：改为 `anthropic/` 前缀 + `api_base: https://ark.cn-beijing.volces.com/api/coding/v1`。
-
-### 坑 5：PicoClaw 无法读取 OpenClaw 配置
-
-**现象**：PicoClaw 尝试读取 `/root/.openclaw/openclaw.json` 时被拒绝。
-
-**原因**：PicoClaw 默认只能读取自己的 workspace 内文件（安全限制）。
-
-**解决**：在 PicoClaw `config.json` 中添加：
-```json
-{
-  "allow_read_outside_workspace": true,
-  "allow_read_paths": [
-    "/root/.openclaw/",
-    "/root/.openclaw/workspace/",
-    "/etc/systemd/system/openclaw-gateway.service"
-  ]
-}
-```
-
-重启服务生效。
 
 ## 双向运维 Skill
 
@@ -213,11 +133,10 @@ sudo systemctl restart picoclaw
 路径：`/root/.picoclaw/workspace/skills/openclaw-ops/SKILL.md`
 
 包含内容：
-- OpenClaw 系统架构（Gateway、量化引擎、定时任务）
+- OpenClaw 系统架构（Gateway、定时任务）
 - 诊断流程（服务状态、日志、配置检查）
 - 常见问题修复（服务重启、端口冲突、模型切换）
 - 配置管理（`openclaw.json` 结构、环境变量）
-- 量化运维（supervisord 管理、策略进程监控）
 - 会话日志查看
 
 ## 记忆文件建设
@@ -241,24 +160,20 @@ systemctl --user status openclaw-gateway
 
 # PicoClaw
 systemctl status picoclaw
-
-# 量化引擎
-supervisorctl -c /root/.openclaw/workspace/openclaw-trade/supervisord.conf status
 ```
 
-全部显示 `active (running)` 或 `RUNNING`。
+全部显示 `active (running)`。
 
 ### 2. 端口监听
 
 ```bash
-netstat -tlnp | grep -E '18789|18790|19001'
+netstat -tlnp | grep -E '18789|18790'
 ```
 
 输出：
 ```
 tcp  0.0.0.0:18789  LISTEN  <pid>/node
 tcp  0.0.0.0:18790  LISTEN  <pid>/picoclaw
-tcp  0.0.0.0:19001  LISTEN  <pid>/supervisord
 ```
 
 ### 3. QQ Bot 连接
@@ -268,7 +183,7 @@ tcp  0.0.0.0:19001  LISTEN  <pid>/supervisord
 ### 4. 双向运维能力
 
 - 在 OpenClaw 中询问 "PicoClaw 状态如何？" → 自动调用 `picoclaw-ops` skill，返回服务状态
-- 在 PicoClaw 中询问 "OpenClaw 量化引擎运行正常吗？" → 自动调用 `openclaw-ops` skill，返回 supervisord 状态
+- 在 PicoClaw 中询问 "OpenClaw 运行正常吗？" → 自动调用 `openclaw-ops` skill，返回服务状态
 
 ## 总结
 
@@ -278,7 +193,6 @@ tcp  0.0.0.0:19001  LISTEN  <pid>/supervisord
 2. **双向运维**：任何一方都能诊断和修复另一方
 3. **模型对齐**：两边使用相同的 LLM provider 配置
 4. **记忆同步**：PicoClaw 持有 OpenClaw 的系统知识
-5. **踩坑记录**：多个 API 兼容性问题已解决并文档化
 
 下一步计划：
 - 配置 PicoClaw 的定时任务（健康检查、日志清理）
