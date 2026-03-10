@@ -8,7 +8,7 @@ export default defineConfig({
   base: '/openclaw-blog',
   integrations: [mdx(), sitemap()],
   markdown: {
-    syntaxHighlight: 'shiki',
+    syntaxHighlight: false,
     rehypePlugins: [
       [
         rehypeMermaid,
@@ -17,12 +17,15 @@ export default defineConfig({
           dark: true,
         }
       ],
+      [
+        (await import('@astrojs/markdown-remark')).rehypeShiki,
+        {
+          themes: {
+            light: 'github-light',
+            dark: 'github-dark',
+          },
+        }
+      ],
     ],
-    shikiConfig: {
-      themes: {
-        light: 'github-light',
-        dark: 'github-dark',
-      },
-    },
   },
 });
